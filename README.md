@@ -1,3 +1,16 @@
+# Running the application
+
+Firstly,
+`yarn install`
+
+Then,
+
+`yarn start`
+
+# Known issues
+
+Currently, when disliking a color the button still shows that it is liked but upon clicking generate new colors the disliked color will be removed.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
