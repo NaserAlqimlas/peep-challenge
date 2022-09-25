@@ -1,51 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 
-// obtain a list of 8 random hex values
-const getRandomColors = () => {
-    const colors = [];
-    const length = 8;
-    for (let i = 0; i < length; i++) {
-        const hex = "#" + Math.floor(Math.random() * 0xffffff).toString(16);
-        colors.push(hex);
-    }
-    return colors;
-};
-
-// get random colors and display them
-const generateRandomColors = () => {
-    const colors = getRandomColors();
-    const colorComponent = colors.map((color) => (
-        <Typography>{color}</Typography>
-    ));
-    return colorComponent;
-};
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const ColorGenerator = () => {
-    const [generated, setGenerated] = useState<JSX.Element[]>([]);
+    const [colors, setColors] = useState<string[]>([]);
+    const [liked, setLiked] = useState<string[]>([]);
 
-    return generated.length > 0 ? (
+    const getRandomColors = (amountToGenerate: number = 8) => {
+        const hexValues: string[] = [];
+        for (let i = 0; i < amountToGenerate; i++) {
+            const hex = "#" + Math.floor(Math.random() * 0xffffff).toString(16);
+            hexValues.push(hex);
+        }
+        setColors(() => {
+            return [...liked, ...hexValues];
+        });
+    };
+
+    const generateRandomColors = () => {
+        const amount = 8 - liked.length;
+        getRandomColors(amount);
+    };
+
+    // could make this more readable, will come back to it later.
+    const handleLike = (value: string) => {
+        if (liked.includes(value) === true) {
+            const copy = liked;
+            let index = copy.indexOf(value);
+            if (index !== -1) {
+                copy.splice(index, 1);
+                setLiked(copy);
+            }
+        } else {
+            setLiked((liked) => {
+                return [...liked, value];
+            });
+        }
+    };
+
+    return (
         <>
             <div>
-                {generated.map((generatedColor) => (
-                    <>{generatedColor}</>
+                {colors.map((color) => (
+                    <Card
+                        sx={{ minWidth: 275 }}
+                        style={{ backgroundColor: color }}
+                    >
+                        <CardContent>
+                            <Typography>{color}</Typography>
+                        </CardContent>
+                        <CardActions>
+                            <Button
+                                variant="contained"
+                                onClick={() => handleLike(color)}
+                            >
+                                {liked.includes(color) ? (
+                                    <FavoriteIcon />
+                                ) : (
+                                    <FavoriteBorderIcon />
+                                )}
+                            </Button>
+                        </CardActions>
+                    </Card>
                 ))}
             </div>
-            <Button
-                variant="contained"
-                onClick={() => setGenerated(generateRandomColors)}
-            >
+            <Button variant="contained" onClick={generateRandomColors}>
                 Generate New Color Pallete
             </Button>
         </>
-    ) : (
-        <Button
-            variant="contained"
-            onClick={() => setGenerated(generateRandomColors)}
-        >
-            Generate Color Pallete
-        </Button>
     );
 };
 
